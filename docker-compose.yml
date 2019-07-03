@@ -1,0 +1,38 @@
+version: '2'
+services:
+    nginx:
+        container_name: test-nginx
+        image: nginx:latest
+        env_file:
+          - .env
+        ports:
+            - "80:80"
+        working_dir: /docker/etc/nginx/conf.d
+        volumes:
+            - ${SITES_ABS_ROOT_DIR}:/www
+            - ./docker/etc/nginx/conf.d:/etc/nginx/conf.d
+        links:
+            - php
+    php:
+        container_name: test-php
+        image: test-php
+        build:
+            context: .
+            dockerfile: ./docker/image/php/Dockerfile
+        env_file:
+          - .env
+        working_dir: /www
+        volumes:
+            - ${SITES_ABS_ROOT_DIR}:/www
+            - ./install:/install
+        links:
+            - database
+    database:
+        container_name: test-database
+        image: mysql:5
+        env_file:
+          - .env
+        volumes:
+          - /data/docker/mysql:/var/lib/mysql
+        ports:
+          - "3306:3306"

@@ -1,0 +1,29 @@
+notifications:
+  email:
+    on_success: never
+
+branches:
+  only:
+  - master
+  - beta
+
+language: generic
+
+env:
+  - DOCKER_COMPOSE_VERSION=1.19.0
+
+before_install:
+    - sudo service mysql stop
+    - sudo rm /usr/local/bin/docker-compose
+    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    - chmod +x docker-compose
+    - sudo mv docker-compose /usr/local/bin
+install:
+    - mkdir -p $TRAVIS_BUILD_DIR/www; cd $TRAVIS_BUILD_DIR/www;
+    - git clone https://github.com/alxvgt/me.imateapot.ovh.git
+    - cd $TRAVIS_BUILD_DIR; chmod +x launch-ci.sh ; bash launch-ci.sh
+script:
+    - docker exec -ti php bash -c 'cd me.imateapot.ovh; bash build.sh'
+deploy:
+    on:
+       tags: true
