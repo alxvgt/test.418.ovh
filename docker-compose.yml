@@ -1,7 +1,7 @@
 version: '2'
 services:
     nginx:
-        container_name: test-nginx
+        container_name: certy-nginx
         image: nginx:latest
         env_file:
           - .env
@@ -14,21 +14,21 @@ services:
         links:
             - php
     php:
-        container_name: test-php
-        image: test-php
+        container_name: certy-php
+        image: certy-php
         build:
             context: .
-            dockerfile: ./docker/image/php/Dockerfile
+            dockerfile: ./docker/image/certy-php.dockerfile
         env_file:
           - .env
         working_dir: /www
         volumes:
             - ${SITES_ABS_ROOT_DIR}:/www
-            - ./install:/install
+            - ./docker/install:/install
         links:
             - database
     database:
-        container_name: test-database
+        container_name: certy-database
         image: mysql:5
         env_file:
           - .env
